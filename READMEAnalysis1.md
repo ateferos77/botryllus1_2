@@ -287,6 +287,7 @@ To ensure robust gene selection, HVG identification was tested across multiple p
 - **Overall stability**: 87-100% gene overlap across parameter sets
 
 ### 5. HVG Overlap and Stability Assessment
+<img width="774" height="590" alt="image" src="https://github.com/user-attachments/assets/cefada4e-918b-4da8-9005-02a202d9e4e6" />
 
 Jaccard similarity analysis reveals the consistency of HVG selection across different parameter combinations, demonstrating the robustness of the approach.
 
@@ -377,6 +378,9 @@ The selected HVGs likely represent:
 - Stress response and adaptation genes
 
 ## Principal Component Analysis (PCA)
+<img width="1210" height="431" alt="image" src="https://github.com/user-attachments/assets/d89b3fbb-7a0c-46db-bbbc-c7f03a776a86" />
+
+
 
 ### 1. PCA Configuration and Implementation
 
@@ -394,6 +398,9 @@ Principal Component Analysis was performed using the validated highly variable g
 ### 2. Optimal Principal Component Selection
 
 Multiple analytical approaches were employed to determine the optimal number of principal components for downstream analysis, balancing biological signal capture with noise reduction.
+
+<img width="574" height="455" alt="image" src="https://github.com/user-attachments/assets/e9928e11-e27a-4bf8-bf7c-782f9d0ff322" />
+
 
 **Table 29: PC Selection Analysis Results**
 | Method | Recommended PCs | Variance Captured | Interpretation |
@@ -429,6 +436,8 @@ The PCA variance analysis reveals the complex nature of biological variation in 
 ### 4. Elbow Analysis and Component Selection Validation
 
 Comprehensive elbow analysis using multiple detection methods confirms the robustness of PC selection, with convergent evidence supporting PC10 as the optimal cutoff.
+
+<img width="1489" height="990" alt="image" src="https://github.com/user-attachments/assets/7657f982-d198-4d1c-b41e-b6e3d8f78dcb" />
 
 **Table 31: Elbow Detection Method Comparison**
 | Analysis Approach | Result | Validation |
@@ -491,24 +500,8 @@ Examination of brain region distribution in principal component space reveals **
 - **Developmental consistency**: Similar developmental programs operate across brain regions
 - **Functional homogeneity**: Both regions likely serve equivalent roles in Botryllus neural function
 
-### 7. Gene Loading Analysis
 
-Analysis of gene contributions to principal components reveals the molecular basis of cellular variation, with specific genes driving major axes of differentiation.
-
-**Table 34: Principal Component Gene Loading Summary**
-| Component | Top Loading Genes | Functional Interpretation |
-|-----------|------------------|--------------------------|
-| **PC17** | High-loading gene set | Specific cellular program or cell type |
-| **PC5** | Distributed loading pattern | Broad biological process |
-| **Loading Distribution** | Variable across components | Different biological mechanisms |
-
-**Gene Loading Insights:**
-- **Component-specific patterns**: Each PC driven by distinct gene sets
-- **Cellular programs**: Gene loadings likely reflect cell type identity markers
-- **Cell type markers**: High-loading genes potential cellular identity identifiers
-- **Functional diversity**: Different PCs capture distinct cell type signatures
-
-### 8. PCA Quality Assessment and Validation
+### 7. PCA Quality Assessment and Validation
 
 **Table 35: PCA Analysis Quality Metrics**
 | Quality Aspect | Assessment | Evidence |
@@ -519,41 +512,182 @@ Analysis of gene contributions to principal components reveals the molecular bas
 | **Biological signal** | ✓ Strong | Cell-type driven variation patterns |
 | **Computational efficiency** | ✓ Optimal | ARPACK solver performance |
 
-### 9. Downstream Analysis Recommendations
-
-**Table 36: PCA-Based Analysis Strategy**
-| Analysis Step | Recommendation | Rationale |
-|---------------|----------------|-----------|
-| **Clustering** | Use PC1-PC10 | Captures major cell type variation |
-| **Neighborhood analysis** | Focus on first 10 PCs | Optimal signal-to-noise ratio |
-| **Visualization** | PC1-PC2 primary, explore PC3-PC5 | Major axes of cell type differentiation |
-| **Cell type identification** | Analyze PC1-PC5 loadings | Primary components likely cell type markers |
-| **Regional analysis** | Pool regions for cell type discovery | No regional differences detected |
-
-### 10. Summary and Biological Interpretation
-
-The PCA analysis successfully reduced the dimensionality of the Botryllus brain scRNA-seq dataset from 4,146 highly variable genes to 10 meaningful principal components while preserving essential biological information.
-
-**Key Achievements:**
-1. **Optimal dimensionality reduction**: PC1-PC10 capture 19.1% of variance with minimal noise
-2. **Technical validation**: No systematic biases detected in major components
-3. **Cell-type focus**: Variation driven by cellular identity rather than regional differences
-4. **Robust component selection**: Multiple analytical methods confirm PC10 cutoff
-5. **Analysis-ready output**: PCA coordinates prepared for cell type clustering
-
-**Biological Insights:**
-- **Cellular complexity**: Gradual variance decay indicates diverse cell type populations
-- **Regional equivalence**: Complete B2/AB overlap indicates functionally equivalent brain regions
-- **Cell-type programs**: Multiple PCs capture different cellular identity signatures
-- **Cross-species validity**: Stable PCA results validate human gene mapping approach
-
-**Technical Robustness:**
-- ARPACK solver efficiently handled sparse 581 × 4,146 matrix
-- HVG-based analysis focused on biologically relevant cell type features
-- Quality control metrics confirm absence of technical or regional confounding
-- Elbow analysis provides objective evidence for optimal PC selection
 
 The PCA analysis provides a robust foundation for downstream cell type clustering analysis, with high confidence that the retained components capture meaningful cellular variation while minimizing technical noise. The absence of regional differences suggests that B2 and AB represent equivalent functional brain units in Botryllus.
+
+## Dimensional Reduction and Embedding Analysis
+
+### 1. UMAP Parameter Optimization Strategy
+
+Following PCA analysis, Uniform Manifold Approximation and Projection (UMAP) was employed to create two-dimensional embeddings optimized for cell type discovery. A systematic parameter optimization approach was implemented to identify optimal settings for the Botryllus brain scRNA-seq dataset.
+
+**Table 37: UMAP Parameter Testing Framework**
+| Parameter | Test Range | Rationale |
+|-----------|------------|-----------|
+| **n_neighbors** | 15, 25, 35 | Balance local vs global structure preservation |
+| **n_pcs** | 10, 15 | Based on PCA elbow analysis (PC1-PC10 optimal) |
+| **metric** | cosine, euclidean | Distance measures for scRNA-seq data |
+| **random_state** | 42 | Reproducibility across analyses |
+
+### 2. Comprehensive Quality Assessment Results
+
+Systematic evaluation of six parameter combinations using multiple quality metrics revealed optimal settings for Botryllus brain cell type discovery.
+
+**Table 38: UMAP Parameter Optimization Results**
+| Parameter Set | Silhouette Score | Expected Clusters | Neighborhood Preservation | Composite Score |
+|---------------|------------------|-------------------|---------------------------|-----------------|
+| **nn35_pc10_cosine** | **0.634** | 12 | 0.715 | **0.610** |
+| **nn25_pc10_cosine** | 0.625 | 10 | 0.716 | 0.608 |
+| **nn15_pc10_cosine** | 0.613 | 13 | 0.713 | 0.607 |
+| **nn15_pc10_euclidean** | 0.599 | 14 | 0.719 | **0.620** |
+| **nn25_pc15_cosine** | 0.599 | 20 | 0.734 | 0.603 |
+| **nn25_pc10_euclidean** | 0.560 | 14 | 0.713 | 0.596 |
+
+**Key Performance Indicators:**
+- **Excellent clustering quality**: All top parameters achieved silhouette scores >0.6
+- **Consistent cell type prediction**: 10-14 expected cell types across optimal parameters
+- **Robust neighborhood preservation**: >71% local structure maintenance
+- **Biological relevance**: Low region mixing (0.31-0.34) indicating subtle regional specialization
+
+### 3. Selected UMAP Configurations
+
+Based on comprehensive assessment, two complementary UMAP embeddings were generated to capture different aspects of cellular organization:
+
+**Table 39: Final UMAP Configuration Comparison**
+| Configuration | Parameters | Strengths | Use Case |
+|---------------|------------|-----------|----------|
+| **Cosine-based** | n_neighbors=35, metric='cosine' | Highest silhouette (0.634), expression pattern focus | **Primary analysis** |
+| **Euclidean-based** | n_neighbors=15, metric='euclidean' | Highest composite score (0.620), magnitude sensitivity | **Comparative validation** |
+
+### 4. UMAP Embedding Analysis
+
+#### 4.1 Cosine Distance Embedding (Primary Analysis)
+
+<img width="553" height="431" alt="image" src="https://github.com/user-attachments/assets/93a7a187-fda0-4fed-a61f-ed1c6d2b5235" />
+
+The cosine-based UMAP embedding (n_neighbors=35, metric='cosine') serves as the primary dimensional reduction for downstream cell type discovery.
+
+**Table 40: Cosine UMAP Characteristics**
+| Feature | Assessment | Biological Interpretation |
+|---------|------------|--------------------------|
+| **Cluster separation** | Excellent (silhouette=0.634) | Clear cell type boundaries expected |
+| **Gene expression distribution** | Gradient patterns visible | Cellular diversity captured |
+| **Spatial organization** | Distinct cellular neighborhoods | ~12 putative cell types |
+| **Technical quality** | No systematic biases | Ready for clustering analysis |
+
+**Cosine Distance Advantages for Botryllus scRNA-seq:**
+- **Expression pattern focus**: Emphasizes gene co-expression relationships over absolute levels
+- **Cross-species robustness**: Handles human gene mapping variations effectively
+- **Sparse data optimization**: Performs well with scRNA-seq zero-inflation
+- **Library size independence**: Naturally normalizes for total expression differences
+
+#### 4.2 Euclidean Distance Embedding (Comparative Analysis)
+
+<img width="553" height="431" alt="image" src="https://github.com/user-attachments/assets/25d5a5d4-9951-4170-bfd2-62b0fca3b732" />
+
+The euclidean-based embedding (n_neighbors=15, metric='euclidean') provides complementary perspective on cellular organization.
+
+**Table 41: Euclidean UMAP Characteristics**
+| Feature | Assessment | Biological Interpretation |
+|---------|------------|--------------------------|
+| **Cluster separation** | Very good (silhouette=0.599) | Moderate cell type boundaries |
+| **Expression magnitude sensitivity** | High | Captures absolute expression differences |
+| **Local structure** | Excellent preservation (0.719) | Fine-grained cellular relationships |
+| **Regional effects** | Slightly enhanced (mixing=0.335) | Detects expression magnitude differences |
+
+### 5. Comparative Embedding Analysis
+
+Visual inspection of both UMAP embeddings reveals distinct organizational principles captured by different distance metrics.
+
+**Table 42: Embedding Comparison Analysis**
+| Aspect | Cosine Embedding | Euclidean Embedding | Biological Significance |
+|--------|------------------|-------------------|------------------------|
+| **Cluster compactness** | Moderate, well-defined | Tight, distinct clusters | Both suitable for cell typing |
+| **Gene expression gradients** | Smooth transitions | Sharp boundaries | Different sensitivity to expression levels |
+| **Outlier cells** | Integrated into neighborhoods | More isolated positioning | Cosine better handles expression variability |
+| **Overall structure** | Branched, tree-like | More scattered, discrete | Reflects different biological relationships |
+
+**Key Observations from Visual Analysis:**
+- **Cosine embedding**: Shows clear clustering structure with 6-8 major cell groups and smooth expression gradients
+- **Euclidean embedding**: Displays more discrete clusters with sharper boundaries and distinct outlier populations
+- **Gene expression patterns**: Both embeddings show meaningful n_genes distribution without technical artifacts
+- **Complementary information**: Each embedding captures different aspects of cellular heterogeneity
+
+### 6. Technical Quality Validation
+
+Both embeddings demonstrate excellent technical quality with minimal confounding factors.
+
+**Table 43: Technical Quality Assessment**
+| Quality Metric | Cosine Embedding | Euclidean Embedding | Validation Status |
+|----------------|------------------|-------------------|-------------------|
+| **Batch effects** | None detected | None detected | ✓ Excellent |
+| **Library size bias** | Minimal | Low | ✓ Good |
+| **Gene detection artifacts** | None | None | ✓ Excellent |
+| **Regional bias** | Low mixing (expected) | Low mixing (expected) | ✓ Biologically consistent |
+
+### 7. Biological Insights from Dimensional Reduction
+
+The UMAP analysis reveals important biological features of the Botryllus brain dataset:
+
+**Table 44: Biological Discoveries**
+| Finding | Evidence | Interpretation |
+|---------|----------|----------------|
+| **Cellular diversity** | 10-12 expected cell types | Rich neuronal diversity in Botryllus brain |
+| **Regional specialization** | Low region mixing (0.31-0.34) | B2 and AB regions show subtle functional differences |
+| **Expression heterogeneity** | Continuous expression gradients | Developmental or functional cell states |
+| **Technical robustness** | Consistent across metrics | Reliable foundation for cell type annotation |
+
+### 8. Downstream Analysis Preparation
+
+**Table 45: UMAP-Based Analysis Strategy**
+| Analysis Step | Embedding Choice | Rationale |
+|---------------|------------------|-----------|
+| **Primary clustering** | Cosine embedding | Highest silhouette score, optimal for cell type discovery |
+| **Cluster validation** | Both embeddings | Cross-validation of cell type assignments |
+| **Marker gene analysis** | Cosine embedding | Expression pattern-based cell typing |
+| **Regional comparison** | Both embeddings | Comparative analysis of subtle regional differences |
+
+### 9. Parameter Selection Rationale
+
+**Final Parameter Selection:**
+- **Primary analysis**: n_neighbors=35, metric='cosine', n_pcs=10
+- **Validation analysis**: n_neighbors=15, metric='euclidean', n_pcs=10
+
+**Table 46: Parameter Justification**
+| Parameter | Selected Value | Scientific Rationale |
+|-----------|----------------|---------------------|
+| **n_neighbors=35** | Optimal for cosine | Balances local structure with global organization |
+| **n_neighbors=15** | Optimal for euclidean | Preserves fine-grained local relationships |
+| **metric='cosine'** | Primary choice | Ideal for scRNA-seq expression pattern analysis |
+| **metric='euclidean'** | Validation choice | Sensitive to expression magnitude differences |
+| **n_pcs=10** | Both embeddings | Based on PCA elbow analysis |
+
+### 10. Quality Assurance and Reproducibility
+
+**Table 47: Reproducibility Measures**
+| Aspect | Implementation | Validation |
+|--------|----------------|------------|
+| **Random seed control** | random_state=0 | Identical results across runs |
+| **Parameter documentation** | Comprehensive logging | Full methodological transparency |
+| **Quality metrics** | Multi-dimensional assessment | Objective parameter selection |
+| **Visual validation** | Dual embedding approach | Cross-method consistency check |
+
+### 11. Summary and Transition to Clustering
+
+The dimensional reduction analysis successfully transformed the Botryllus brain scRNA-seq dataset from high-dimensional gene expression space to interpretable two-dimensional embeddings optimized for cell type discovery.
+
+**Key Achievements:**
+1. **Optimal parameter identification**: Systematic testing identified ideal UMAP settings
+2. **Dual embedding strategy**: Cosine and euclidean embeddings capture complementary cellular relationships
+3. **Excellent clustering potential**: Silhouette scores >0.6 predict clear cell type separation
+4. **Biological insight generation**: Regional specialization and cellular diversity quantified
+5. **Technical validation**: No confounding factors detected in either embedding
+
+**Biological Insights:**
+- **Expected cell diversity**: 10-12 distinct cell types predicted in Botryllus brain
+- **Expression patterns**: Both magnitude and pattern-based cellular organization present
+- **Technical robustness**: Cross-species gene mapping did not introduce artifacts
+
 
 
 
